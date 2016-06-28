@@ -44,8 +44,11 @@ var path = d3.geo.path()
 var title = d3.select("h1");
 
 queue()
+    // load the json and tsv files
     .defer(d3.json, "/world-110m.json")
     .defer(d3.tsv, "/world-country-names.tsv")
+
+    // after they are loaded call ready
     .await(ready);
 
 function ready(error, world, names) {
@@ -66,9 +69,13 @@ function ready(error, world, names) {
     return a.name.localeCompare(b.name);
   });
 
+  // This is an IIFE that calls itself recursively. 
   (function transition() {
     d3.transition()
+        // start a 1.25 second transition
         .duration(1250)
+
+        // increment i and set the title to the country name
         .each("start", function() {
           title.text(countries[i = (i + 1) % n].name);
         })
@@ -84,6 +91,8 @@ function ready(error, world, names) {
             c.strokeStyle = "#000", c.lineWidth = 2, c.beginPath(), path(globe), c.stroke();
           };
         })
+
+      // start a new transition that recursively calls transition
       .transition()
         .each("end", transition);
   })();
